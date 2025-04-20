@@ -8,6 +8,8 @@ sequenceDiagram
     server-->>browser: HTML document
     deactivate server
 
+    Note right of browser: Redirecting and instructing to make new HTTP GET 
+
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
     server-->>browser: HTML document
