@@ -23,7 +23,7 @@ sequenceDiagram
     Server-->>Browser: The JavaScript file (spa.js)
     deactivate Server
     
-    Note right of Browser: Beginning of the execution, where Javascript code fetches data of the JSON from the server. Status code 200 OK. 
+    Note right of Browser: No action nor method in the form. Status code 200 OK. 
     
     Browser->>Server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
     activate Server
