@@ -15,7 +15,7 @@ const Content = ({ part1, exercises1, part2, exercises2, part3, exercises3 }) =>
     </div>
 )
 }
-//random comment to see if goes to github
+
 const Total = (props) => {
   return(
     <div>
