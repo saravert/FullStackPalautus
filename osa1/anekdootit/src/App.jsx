@@ -22,8 +22,8 @@ const App = () => {
    
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
-  const anectodeDay = "Anectode of the day"
-  const anectodeMostVotes = "Anectode with most votes"
+  const anecdoteDay = "Anecdote of the day"
+  const anecdoteMostVotes = "Anecdote with most votes"
 
   const keepVotes = () => {
     const copy = [ ...votes ]
@@ -36,12 +36,12 @@ const App = () => {
 
   return (
     <div>
-      <Header header={anectodeDay}/>
+      <Header header={anecdoteDay}/>
       <div>{anecdotes[selected]}</div>
       <div>Has {votes[selected]} votes</div>
       <Button onClick={keepVotes} text="vote" />
-      <Button onClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))} text="next anectode"/>
-      <Header header={anectodeMostVotes}/>
+      <Button onClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))} text="next anecdote"/>
+      <Header header={anecdoteMostVotes}/>
       <div>{anecdotes[mostVotedIndex]}</div>
       <div>Has {mostVotes} votes</div>
     </div>
