@@ -6,6 +6,8 @@ const Button = (props) => (
   </button>
 )
 
+const Header = (props) => (<h1>{props.header}</h1>)
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -20,6 +22,8 @@ const App = () => {
    
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+  const anectodeDay = "Anectode of the day"
+  const anectodeMostVotes = "Anectode with most votes"
 
   const keepVotes = () => {
     const copy = [ ...votes ]
@@ -27,12 +31,19 @@ const App = () => {
     setVotes(copy)
   }
 
+  const mostVotes = Math.max(...votes)
+  const mostVotedIndex = votes.indexOf(mostVotes)
+
   return (
     <div>
+      <Header header={anectodeDay}/>
       <div>{anecdotes[selected]}</div>
       <div>Has {votes[selected]} votes</div>
       <Button onClick={keepVotes} text="vote" />
       <Button onClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))} text="next anectode"/>
+      <Header header={anectodeMostVotes}/>
+      <div>{anecdotes[mostVotedIndex]}</div>
+      <div>Has {mostVotes} votes</div>
     </div>
   )
 }
