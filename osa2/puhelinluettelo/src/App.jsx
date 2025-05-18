@@ -3,12 +3,15 @@ import personService from './services/persons'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/Personform'
+import Notification from './components/Notification'
+
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [findPerson, setFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
   
   useEffect(() => {
     personService
@@ -37,6 +40,12 @@ const App = () => {
              })
              setNewName('')
              setNewPhone('')
+             setSuccessMessage(
+             `Phone nubmer of ${personExists.name} was changed successfully`
+             )
+             setTimeout(() => {
+             setSuccessMessage(null)
+             }, 2000)
              return
       } else {
         return
@@ -50,6 +59,12 @@ const App = () => {
       setNewName('')
       setNewPhone('')
     })
+          setSuccessMessage(
+       `${personObject.name} was added successfully`
+      )
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 2000)
 
   }
 
@@ -63,6 +78,12 @@ const App = () => {
       setPersons(persons.filter((person) => person.id !== id))
                   }
            )
+      setSuccessMessage(
+       `${person.name} was removed successfully`
+      )
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 2000)
     }
   }
 
@@ -85,6 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+       <Notification message={successMessage} />
       <Filter findPerson={findPerson} handleSearch={handleSearch}/>
       <h2>Add a new</h2>
       <PersonForm 
