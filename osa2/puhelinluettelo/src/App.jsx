@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import Filter from './components/Filter'
+import Persons from './components/Persons'
+import PersonForm from './components/Personform'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -43,7 +46,7 @@ const App = () => {
   const handlePhone = (event) => {
     setNewPhone(event.target.value)
   }
-
+ 
   const handleSearch = (event) => {
     setFilter(event.target.value)
   }
@@ -69,36 +72,6 @@ const App = () => {
     </div>
   )
 
-}
-
-const Filter = ({findPerson, handleSearch}) => {
-  return(
-  <div>filter shown with <input value={findPerson} onChange={handleSearch}></input></div>
-  )
-}
-
-const PersonForm = ({newName, newPhone, onNameChange, onPhoneChange, onSubmit}) => {
- return( 
-  <form onSubmit={onSubmit}>
-        <div>
-          name: <input value={newName} onChange={onNameChange}/>
-        </div>
-        <div>number: <input value={newPhone} onChange={onPhoneChange}/></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
- )
-}
-
-const Persons = ({persons}) => {
-  return(
-  <ul>
-      {persons.map(person => 
-          <li key={person.name}>{person.name} {person.number}</li>
-        )}
-      </ul>
-  )
 }
 
 export default App
