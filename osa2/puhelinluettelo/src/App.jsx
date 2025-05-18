@@ -39,6 +39,19 @@ const App = () => {
 
   }
 
+  const deleteContact = id => {
+    const person = persons.find(p => p.id === id)
+     if (window.confirm(`Delete ${person.name}?`)) 
+    {
+      personService
+      .deleteContact(id)
+      .then(() => {
+      setPersons(persons.filter((person) => person.id !== id))
+                  }
+           )
+    }
+  }
+
   const handleNewName = (event) => {
     setNewName(event.target.value)
   }
@@ -68,7 +81,9 @@ const App = () => {
         onSubmit={addName}
       />
       <h2>Numbers</h2>
-      <Persons persons={showFiltered} />
+      <Persons persons={showFiltered} 
+               deletePerson={deleteContact} 
+      />
     </div>
   )
 
