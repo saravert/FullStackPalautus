@@ -5,8 +5,7 @@ import axios from 'axios'
 const App = () => {
 
   const [countries, setCountries] = useState([])
-  const [filter, setFilter] = useState ('')
-  const [search, setSearch] = useState([])
+  const [search, setSearch] = useState('')
 
   useEffect(() =>{
     console.log('testiä')
@@ -20,9 +19,13 @@ const App = () => {
   }, [])
 
   const handleChange = (event) => {
-    setSearch(event.target.search)
+    setSearch(event.target.value)
     console.log('moikkuu')
   }
+
+  const showFiltered = countries.filter((country) =>
+    country.name.common.includes(search)
+  )
 
 
   return (
@@ -32,7 +35,7 @@ const App = () => {
       </form>
       <p>Too many matches, specify another filter</p>
       <ul>
-        {countries.map(country => (
+        {showFiltered.map(country => (
           <li key={country.cca3}>{country.name.common}</li>
         ))}
       </ul>
