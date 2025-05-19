@@ -6,6 +6,7 @@ const App = () => {
 
   const [countries, setCountries] = useState([])
   const [search, setSearch] = useState('')
+  const [selectedCountry, setSelected] = useState(null)
 
   useEffect(() =>{
     axios
@@ -17,6 +18,7 @@ const App = () => {
  
   const handleChange = (event) => {
     setSearch(event.target.value)
+    setSelected(null)
   }
 
   const showFiltered = countries.filter((country) =>
@@ -52,9 +54,12 @@ const App = () => {
       </form>
       <ul>
         {showFiltered.map(country => (
-          <li key={country.cca3}>{country.name.common}</li>
+          <li key={country.cca3}>{country.name.common}
+              <button onClick={() => setSelected(country)}>Show</button>
+          </li>
         ))}
       </ul>
+      {selectedCountry && <SingleCountry country={selectedCountry}/>}
     </div>
   )
 
