@@ -1,29 +1,83 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import personService from './services/persons'
+import Filter from './components/Filter'
+import Persons from './components/Persons'
+import PersonForm from './components/Personform'
+import Notification from './components/Notification'
+
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [findPerson, setFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+  
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {setPersons(initialPersons)})
+  }, [])
 
   const addName = (event) => {
     event.preventDefault()
+
     const personObject = {
       name: newName.trim(),
       number: newPhone.trim()
     }
-    if(persons.some((person) => person.name.toLowerCase() === newName.toLowerCase().trim() )){
-      alert(`${newName} is already added to phonebook`)
-      return
+
+    const personExists = persons.find((person) => person.name.trim().toLowerCase() === personObject.name.toLowerCase())
+    
+    if(personExists){
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+             personService
+             .update(personExists.id, personObject)
+             .then(returnedPerson => {
+
+              setPersons(persons.map((person) => (person.id !== personExists.id ? person : returnedPerson)))
+              setNewName('')
+              setNewPhone('')
+
+              setSuccessMessage(`Phone number of ${personExists.name} was changed successfully`)
+              setTimeout(() => {setSuccessMessage(null)}, 2000)
+             })
+             .catch(error => {
+             setErrorMessage(`${personExists.name} has been deleted from the server`)
+             setTimeout(() => {setErrorMessage(null)}, 3000)
+             })
+          return
+      } else {return}
     }
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewPhone('')
+
+    personService
+    .create(personObject)
+    .then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName('')
+      setNewPhone('')
+
+      setSuccessMessage(`${personObject.name} was added successfully`)
+      setTimeout(() => {setSuccessMessage(null)}, 2000)
+    })
+  }
+
+  const deleteContact = id => {
+    const person = persons.find(p => p.id === id)
+     if (window.confirm(`Delete ${person.name}?`)){
+      personService
+      .deleteContact(id)
+      .then(() => {
+          setPersons(persons.filter((person) => person.id !== id))
+          setSuccessMessage(`${person.name} was deleted successfully`)
+          setTimeout(() => {setSuccessMessage(null)}, 2000)
+      })
+      .catch(error => {
+        setErrorMessage(`${person.name} has already been deleted`)
+        setTimeout(() => {setErrorMessage(null)}, 3000)
+      })
+    }
   }
 
   const handleNewName = (event) => {
@@ -33,7 +87,7 @@ const App = () => {
   const handlePhone = (event) => {
     setNewPhone(event.target.value)
   }
-
+ 
   const handleSearch = (event) => {
     setFilter(event.target.value)
   }
@@ -45,6 +99,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+       <Notification message={successMessage} type='success' />
+       <Notification message={errorMessage} type='error'/>
       <Filter findPerson={findPerson} handleSearch={handleSearch}/>
       <h2>Add a new</h2>
       <PersonForm 
@@ -55,40 +111,12 @@ const App = () => {
         onSubmit={addName}
       />
       <h2>Numbers</h2>
-      <Persons persons={showFiltered} />
+      <Persons persons={showFiltered} 
+               deletePerson={deleteContact} 
+      />
     </div>
   )
 
-}
-
-const Filter = ({findPerson, handleSearch}) => {
-  return(
-  <div>filter shown with <input value={findPerson} onChange={handleSearch}></input></div>
-  )
-}
-
-const PersonForm = ({newName, newPhone, onNameChange, onPhoneChange, onSubmit}) => {
- return( 
-  <form onSubmit={onSubmit}>
-        <div>
-          name: <input value={newName} onChange={onNameChange}/>
-        </div>
-        <div>number: <input value={newPhone} onChange={onPhoneChange}/></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
- )
-}
-
-const Persons = ({persons}) => {
-  return(
-  <ul>
-      {persons.map(person => 
-          <li key={person.name}>{person.name} {person.number}</li>
-        )}
-      </ul>
-  )
 }
 
 export default App
