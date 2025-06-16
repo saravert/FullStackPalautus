@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+var morgan = require('morgan')
 
 let persons = [
   {
@@ -25,6 +26,7 @@ let persons = [
 ]
 
 app.use(express.json())
+app.use(morgan('tiny'))
 
 app.get('/', (request, response) => {
   response.send('Phonebook in the api/persons')
