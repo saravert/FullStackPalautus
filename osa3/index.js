@@ -4,22 +4,22 @@ const app = express()
 let persons = [
   {
     id: '1',
-    content: 'Arto Hellas',
+    name: 'Arto Hellas',
     number: '040-123456',
   },
   {
     id: '2',
-    content: 'Ada Lovelace',
+    name: 'Ada Lovelace',
     number: '39-44-5323523',
   },
   {
     id: '3',
-    content: 'Dan Abramov',
+    name: 'Dan Abramov',
     number: '12-43-234345',
   },
     {
     id: '4',
-    content: 'Mary Poppendieck',
+    name: 'Mary Poppendieck',
     number: '39-23-6423122',
   }
 ]
@@ -32,6 +32,18 @@ app.get('/', (request, response) => {
 
 app.get('/api/persons', (req, res) => {
   res.json(persons)
+})
+
+app.get('/info', (req, response) => {
+  const personAmount = persons.length
+  const time = new Date ()
+
+  response.send(`
+    <div>
+      <p>Phonebook has info for ${personAmount} people</p>
+      <p>${time}</p>
+    </div>
+  `)
 })
 
 const PORT = 3001
