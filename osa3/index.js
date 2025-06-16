@@ -30,11 +30,11 @@ app.get('/', (request, response) => {
   response.send('Phonebook in the api/persons')
 })
 
-app.get('/api/persons', (req, res) => {
-  res.json(persons)
+app.get('/api/persons', (request, response) => {
+  response.json(persons)
 })
 
-app.get('/info', (req, response) => {
+app.get('/info', (request, response) => {
   const personAmount = persons.length
   const time = new Date ()
 
@@ -55,6 +55,13 @@ app.get('/api/persons/:id', (request, response) => {
   } else {
     response.status(404).end()
   }
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  persons = persons.filter((person) => person.id !== id)
+
+  response.status(204).end()
 })
 
 const PORT = 3001
