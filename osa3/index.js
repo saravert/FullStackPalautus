@@ -101,11 +101,6 @@ app.post('/api/persons', (request, response) => {
       error: 'name or number missing',
     })
   }
-  if (persons.find(person => person.name === body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique',
-    })
-  }
 
   const person = new Person({
     name: body.name,
@@ -115,6 +110,25 @@ app.post('/api/persons', (request, response) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
+  const updatedPerson = { name, number }
+
+  Person.findByIdAndUpdate(
+    request.params.id,
+    updatedPerson,
+    { new: true, runValidators: true, context: 'query' }
+  )
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).send({ error: 'person not found' })
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
