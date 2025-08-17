@@ -61,6 +61,11 @@ const App = () => {
       setSuccessMessage(`${personObject.name} was added successfully`)
       setTimeout(() => {setSuccessMessage(null)}, 2000)
     })
+    .catch(error => {
+      setErrorMessage(error.response.data.error)
+       setTimeout(() => {setErrorMessage(null)}, 3000)
+      console.log(error.response.data)
+    })
   }
 
   const deleteContact = id => {
