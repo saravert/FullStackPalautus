@@ -44,7 +44,11 @@ const App = () => {
               setTimeout(() => {setSuccessMessage(null)}, 2000)
              })
              .catch(error => {
+              if (error.response && error.response.data && error.response.data.error) {
+                setErrorMessage(error.response.data.error)
+            } else {
              setErrorMessage(`${personExists.name} has been deleted from the server`)
+            }
              setTimeout(() => {setErrorMessage(null)}, 3000)
              })
           return
