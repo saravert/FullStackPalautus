@@ -3,13 +3,10 @@ const express = require('express')
 const mongoose = require('mongoose')
 
 const app = express()
-
+const config = require('./utils/config')
 const Blog = require('./models/blog')
 
-// const password = process.argv[2]
-const mongoUrl = process.env.MONGODB_URI
-
-mongoose.connect(mongoUrl)
+mongoose.connect(config.MONGODB_URI)
 
 app.use(express.json())
 
@@ -27,7 +24,6 @@ app.post('/api/blogs', (request, response) => {
   })
 })
 
-const PORT = process.env.PORT || 3003
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`)
 })
