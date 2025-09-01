@@ -1,4 +1,4 @@
-const lodash = require('lodash')
+const _ = require('lodash')
 // eslint-disable-next-line no-unused-vars
 const dummy = (blogs) => {
   return 1
@@ -11,9 +11,7 @@ const totalLikes = (blogs) => {
 }
 
 const favoriteBlog = (blogs) => {
-  if (blogs.length === 0){
-    return null
-  }
+  if (blogs.length === 0) return null
   
   let mostLiked = blogs[0]
   for (let i = 0; i < blogs.length; i++){
@@ -25,10 +23,16 @@ const favoriteBlog = (blogs) => {
 }
 
 const mostBlogs = (blogs) => {
-  //if (blogs.length === 0) return null
-
+  if (blogs.length === 0) return null
+  const amounts = _.countBy(blogs, 'author')
+  const amountstoArray = Object.entries(amounts).map(([author, count]) => ({
+    author, blogs: count
+  }))
+  const mostBlogs = _.orderBy(amountstoArray, ['blogs'], ['desc'])
+  console.log('most blogs are made by ' + mostBlogs[0].author)
+  return mostBlogs[0]
 }
 
 module.exports = {
-  dummy, totalLikes, favoriteBlog
+  dummy, totalLikes, favoriteBlog, mostBlogs
 }
