@@ -122,6 +122,23 @@ test('if url is missing, respond with 400 Bad Request', async () => {
   assert.strictEqual(response.body.length, initialBlogs.length, 'no blog added')
 })
 
+test('deletion of a blog', async () => {
+  const responseAtStart = await api.get('/api/blogs')
+  const blogsAtStart = responseAtStart.body
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const responseAtEnd = await api.get('/api/blogs')
+  const blogsAtEnd = responseAtEnd.body
+
+  assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+  const titles = blogsAtEnd.map(blog => blog.title)
+  assert.strictEqual(titles.includes(blogToDelete.title), false)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
