@@ -139,6 +139,30 @@ test('deletion of a blog', async () => {
   assert.strictEqual(titles.includes(blogToDelete.title), false)
 })
 
+test('updating a blog', async () => {
+  const responseAtStart = await api.get('/api/blogs')
+  const blogsAtStart = responseAtStart.body
+  const blogToUpdate = blogsAtStart[0]
+  const updatedBlogData = {
+    title: 'Updated blog',
+    author: 'Author 1',
+    url: 'https://example.com/updated-blog',
+    likes: 15
+  }
+
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlogData)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const updatedBlog = response.body
+  assert.strictEqual(updatedBlog.title, updatedBlogData.title)
+  assert.strictEqual(updatedBlog.author, updatedBlogData.author)
+  assert.strictEqual(updatedBlog.url, updatedBlogData.url)
+  assert.strictEqual(updatedBlog.likes, updatedBlogData.likes)
+})      
+
 after(async () => {
   await mongoose.connection.close()
 })
