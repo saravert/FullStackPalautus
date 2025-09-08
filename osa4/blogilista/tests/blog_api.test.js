@@ -50,6 +50,29 @@ test('check if unique identifier is named id', async () => {
   })
 })
 
+test('add a new blog', async () => {
+  const newBlog = {
+    title: 'New blog',
+    author: 'Author 3',
+    url: 'https://example.com/new-blog',
+    likes: 16
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+    
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  assert.strictEqual(blogs.length, initialBlogs.length + 1)
+  const addedBlog = blogs.find(blog => blog.title === newBlog.title)
+  assert.strictEqual(addedBlog.author, newBlog.author)
+  assert.strictEqual(addedBlog.url, newBlog.url)
+  assert.strictEqual(addedBlog.likes, newBlog.likes)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
