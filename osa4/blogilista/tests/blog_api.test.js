@@ -103,8 +103,8 @@ test('if title is missing, respond with 400 Bad Request', async () => {
     .post('/api/blogs')
     .send(newBlog)
     .expect(400)
-    const response = await api.get('/api/blogs')
-    assert.strictEqual(response.body.length, initialBlogs.length, 'no blog added')
+  const response = await api.get('/api/blogs')
+  assert.strictEqual(response.body.length, initialBlogs.length, 'no blog added')
 })
 
 test('if url is missing, respond with 400 Bad Request', async () => {
