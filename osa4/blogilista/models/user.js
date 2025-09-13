@@ -1,13 +1,18 @@
+const { min } = require('lodash')
 const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true // username oltava yksikäsitteinen
+    unique: true, // username oltava yksikäsitteinen
+    minlength: 3 // minimipituus 3 merkkiä
   },
   name: String,
-  passwordHash: String,
+  passwordHash: {
+    type: String,
+    required: true
+  },
   blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,
