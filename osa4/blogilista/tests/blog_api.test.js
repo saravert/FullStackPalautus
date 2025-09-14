@@ -4,8 +4,12 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 const api = supertest(app)
+
+let token = null
 
 const initialBlogs = [
   {
@@ -23,10 +27,22 @@ const initialBlogs = [
 ]
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
+  await User.deleteMany({})
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'testUser', passwordHash })
+  await user.save()
+
+  const loginResponse = await api
+    .post('/api/login')
+    .send({ username: 'testUser', password: 'sekret' })
+  token = `Bearer ${loginResponse.body.token}`
+
+  for(let blog of initialBlogs) {
+    await api
+      .post('/api/blogs')
+      .set('Authorization', token)
+      .send(blog)
+  }
 })
 
 test('blogs are returned as json', async () => {
@@ -60,6 +76,7 @@ test('add a new blog', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', token)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -73,6 +90,23 @@ test('add a new blog', async () => {
   assert.strictEqual(addedBlog.likes, newBlog.likes)
 })
 
+test('if token is missing, new blog cannot be created', async () => {
+  const newBlog = {
+    title: 'Unauthorized Blog',
+    author: 'Author 5',
+    url: 'https://example.com/unauthorized-blog',
+    likes: 5
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
+
+  const response = await api.get('/api/blogs')
+  assert.strictEqual(response.body.length, initialBlogs.length, 'no blog added')
+})
+
 test('if likes property is missing, it will default to 0', async () => {
   const newBlog = {
     title: 'Blog without likes',
@@ -82,6 +116,7 @@ test('if likes property is missing, it will default to 0', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', token)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -101,6 +136,7 @@ test('if title is missing, respond with 400 Bad Request', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', token)
     .send(newBlog)
     .expect(400)
   const response = await api.get('/api/blogs')
@@ -116,6 +152,7 @@ test('if url is missing, respond with 400 Bad Request', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', token)
     .send(newBlog)
     .expect(400)
   const response = await api.get('/api/blogs')
@@ -129,6 +166,7 @@ test('deletion of a blog', async () => {
 
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', token)
     .expect(204)
 
   const responseAtEnd = await api.get('/api/blogs')
