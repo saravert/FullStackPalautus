@@ -1,8 +1,10 @@
-POST http://localhost:3003/api/users
+POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "username": "EAa",
-  "name": "Essi Esimerkki",
-  "password": "12"
+  "title": "Updated 2",
+  "author": "Author 12",
+  "url": "https://example.com/updated-blo2g",
+  "likes": 152,
+  "userId":"68c6838fb626aa5831ed0137"
 }
