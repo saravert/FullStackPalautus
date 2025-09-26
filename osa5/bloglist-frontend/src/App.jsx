@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -10,7 +11,7 @@ const App = () => {
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState({message: null, type: null})
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -40,11 +41,15 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch {
-      setErrorMessage('wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      showNotification('wrong username or password', 'error')
     }
+  }
+
+  const showNotification = (message, type='success') => {
+    setNotification({message, type})
+    setTimeout(() => {
+      setNotification({message: null, type: null})
+    }, 5000)
   }
 
   const handleLogout = () => {
@@ -52,21 +57,25 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = (event) => {
+  const addBlog = async(event) => {
     event.preventDefault()
+    try {
     console.log('new blog added')
     const blogObject = {
       title: newTitle,
       author: newAuthor,
       url: newUrl,
       likes: 0
-  }
-    blogService.create(blogObject).then(returnedBlog => {
+  } 
+    const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
       setNewTitle('')
       setNewAuthor('')
       setNewUrl('')
-    })
+      showNotification(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`, 'success')
+    } catch (exception) {
+      showNotification('error creating a blog', 'error')
+    }
 
   }
 
@@ -74,6 +83,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={notification.message} type={notification.type} />
       <form onSubmit={handleLogin}>
         <div>
           <label>
@@ -104,6 +114,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={notification.message} type={notification.type} />
       <p>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>
