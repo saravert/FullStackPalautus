@@ -1,20 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
+import Togglable from './components/Toggable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [blogFormVisible, setBlogFormVisible] = useState(false)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
   const [notification, setNotification] = useState({message: null, type: null})
   const [user, setUser] = useState(null)
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -59,52 +57,13 @@ const App = () => {
     setUser(null)
   }
 
-   const blogForm = () => {
-    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
-    const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
-    
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setBlogFormVisible(true)}>create new blog</button>
-        </div>
-        <div style={showWhenVisible}>
-          <BlogForm
-            addBlog={addBlog}
-            newTitle={newTitle}
-            setNewTitle={setNewTitle}
-            newAuthor={newAuthor}
-            setNewAuthor={setNewAuthor}
-            newUrl={newUrl}
-            setNewUrl={setNewUrl}
-          />
-          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
-        </div>
-      </div>
-    )
-  }
-
-  const addBlog = async(event) => {
-    event.preventDefault()
-    try {
-    console.log('new blog added')
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
-      likes: 0
-  } 
-    const returnedBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(returnedBlog))
-      setNewTitle('')
-      setNewAuthor('')
-      setNewUrl('')
-      setBlogFormVisible(false)
-      showNotification(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`, 'success')
-    } catch (exception) {
-      showNotification('error creating a blog', 'error')
-    }
-
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+      })
   }
 
  if (user === null) {
@@ -147,7 +106,9 @@ const App = () => {
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>
       <h2>Create new</h2>
-      {blogForm()}
+      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+        <BlogForm addBlog={addBlog} />
+      </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
