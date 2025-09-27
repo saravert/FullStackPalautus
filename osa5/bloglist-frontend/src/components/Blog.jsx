@@ -17,6 +17,7 @@ const Blog = ({ blog, updateBlogInState  }) => {
 
 const handleLikes = async (id) => {
     const updatedBlog = await blogs.updateLikes(id, blog.likes + 1)
+    updatedBlog.user = blog.user
     updateBlogInState(updatedBlog)
   }
 
