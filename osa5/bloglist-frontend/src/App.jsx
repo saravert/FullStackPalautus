@@ -76,6 +76,10 @@ const App = () => {
     setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : updatedBlog))
   }
 
+  const deleteBlogInState = (id) => {
+    setBlogs(blogs.filter(blog => blog.id !== id))
+  }
+
  if (user === null) {
     return (
       <div>
@@ -120,7 +124,7 @@ const App = () => {
         <BlogForm addBlog={addBlog} />
       </Togglable>
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlogInState={updateBlogInState} />
+        <Blog key={blog.id} blog={blog} updateBlogInState={updateBlogInState} deleteBlogInState={deleteBlogInState} user={user} />
       )}
     </div>
   )
