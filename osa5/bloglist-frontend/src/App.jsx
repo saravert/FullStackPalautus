@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [blogFormVisible, setBlogFormVisible] = useState(false)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [newTitle, setNewTitle] = useState('')
@@ -57,6 +59,31 @@ const App = () => {
     setUser(null)
   }
 
+   const blogForm = () => {
+    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
+    const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
+    
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setBlogFormVisible(true)}>create new blog</button>
+        </div>
+        <div style={showWhenVisible}>
+          <BlogForm
+            addBlog={addBlog}
+            newTitle={newTitle}
+            setNewTitle={setNewTitle}
+            newAuthor={newAuthor}
+            setNewAuthor={setNewAuthor}
+            newUrl={newUrl}
+            setNewUrl={setNewUrl}
+          />
+          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
+
   const addBlog = async(event) => {
     event.preventDefault()
     try {
@@ -72,6 +99,7 @@ const App = () => {
       setNewTitle('')
       setNewAuthor('')
       setNewUrl('')
+      setBlogFormVisible(false)
       showNotification(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`, 'success')
     } catch (exception) {
       showNotification('error creating a blog', 'error')
@@ -119,21 +147,7 @@ const App = () => {
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>
       <h2>Create new</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          <label>Title</label>
-           <input value={newTitle} onChange={({ target }) => setNewTitle(target.value)} placeholder="Title" />
-        </div>
-        <div>
-          <label>Author</label>
-          <input value={newAuthor} onChange={({ target }) => setNewAuthor(target.value)} placeholder="Author" />
-        </div>
-        <div>
-          <label>URL</label>
-          <input value={newUrl} onChange={({ target }) => setNewUrl(target.value)} placeholder="URL" />
-        </div>
-        <button type="submit">create</button>
-        </form>
+      {blogForm()}
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
