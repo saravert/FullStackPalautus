@@ -38,6 +38,7 @@ const App = () => {
         'loggedNoteappUser', JSON.stringify(user)
       ) 
       setUser(user)
+      blogService.setToken(user.token)
       setUsername('')
       setPassword('')
     } catch {
@@ -62,6 +63,7 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
+        returnedBlog.user = user
         setBlogs(blogs.concat(returnedBlog))
         showNotification(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`, 'success')
       })
