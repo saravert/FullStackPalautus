@@ -1,5 +1,6 @@
 import { useState } from 'react'
-const Blog = ({ blog }) => {
+import blogs from '../services/blogs'
+const Blog = ({ blog, updateBlogInState  }) => {
   const [viewing, setViewing] = useState(false)
 
     const blogStyle = {
@@ -14,6 +15,11 @@ const Blog = ({ blog }) => {
     setViewing(!viewing)
   }
 
+const handleLikes = async (id) => {
+    const updatedBlog = await blogs.updateLikes(id, blog.likes + 1)
+    updateBlogInState(updatedBlog)
+  }
+
   return (
     <div style={blogStyle} className="blog">
       {blog.title} {blog.author}
@@ -22,7 +28,7 @@ const Blog = ({ blog }) => {
         <div>
           <p>{blog.url}</p>
           <p>{blog.likes} likes
-          <button onClick={() => console.log('liking', blog.id)}>like</button></p>
+          <button onClick={() => handleLikes(blog.id)}>like</button></p>
           <p>{blog.user.name}</p>
         </div>
       )}
