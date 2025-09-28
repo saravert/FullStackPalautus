@@ -49,16 +49,16 @@ test('shows url and likes when view button is clicked', async () => {
     username: 'janedoe'
   }
   const mockHandler = vi.fn()
-    render(<Blog blog={blog} user={mockUser} updateBlogInState={mockHandler} deleteBlogInState={() => {}} />)
-    const user = userEvent.setup()
-    const button = screen.getByText('view')
-    await user.click(button)
-    const url = screen.getByText('https://example.com')
-    expect(url).toBeDefined()
-    const likes = screen.getByText('0 likes')
-    expect(likes).toBeDefined()
-    const userName = screen.getByText('Jane Doe')
-    expect(userName).toBeDefined()
+  render(<Blog blog={blog} user={mockUser} updateBlogInState={mockHandler} deleteBlogInState={() => {}} />)
+  const user = userEvent.setup()
+  const button = screen.getByText('view')
+  await user.click(button)
+  const url = screen.getByText('https://example.com')
+  expect(url).toBeDefined()
+  const likes = screen.getByText('0 likes')
+  expect(likes).toBeDefined()
+  const userName = screen.getByText('Jane Doe')
+  expect(userName).toBeDefined()
 })
 
 test('like button calls event handler twice when clicked twice', async () => {
@@ -80,7 +80,7 @@ test('like button calls event handler twice when clicked twice', async () => {
   }
 
   const mockUpdateBlogInState = vi.fn()
-  blogs.updateLikes.mockResolvedValue({...blog, likes: blog.likes + 1})
+  blogs.updateLikes.mockResolvedValue({ ...blog, likes: blog.likes + 1 })
   render(<Blog blog={blog} user={mockUser} updateBlogInState={mockUpdateBlogInState} deleteBlogInState={() => {}} />)
   const user = userEvent.setup()
   const button = screen.getByText('view')
