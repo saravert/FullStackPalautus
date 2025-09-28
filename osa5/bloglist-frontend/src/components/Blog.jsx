@@ -30,12 +30,15 @@ const Blog = ({ blog, updateBlogInState, user, deleteBlogInState }) => {
 
   return (
     <div style={blogStyle} className="blog">
-      {blog.title} {blog.author}
+      <p>
+        <span>{blog.title}</span> {' '}
+        <span>{blog.author}</span>
+      </p>
       <button onClick={toggleView}>{viewing ? 'hide' : 'view'}</button>
       {viewing && (
         <div>
           <p>{blog.url}</p>
-          <p>{blog.likes} likes
+          <p>{blog.likes} likes {' '}
             <button onClick={() => handleLikes(blog.id)}>like</button></p>
           <p>{blog.user.name}</p>
           {blog.user.username === user.username && (
