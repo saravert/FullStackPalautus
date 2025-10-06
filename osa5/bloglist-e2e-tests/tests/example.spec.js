@@ -134,5 +134,37 @@ test('A blog can be deleted', async ({ page }) => {
   await deleteButton.click()
   await expect(blog).toBeVisible({ timeout: 5000 }) 
 })
+test('Only the creator can see the delete button', async ({ page, request }) => { 
+  await request.post('http://localhost:3003/api/users', {
+    data: {
+      name: 'Arto Hellas',
+      username: 'arto',
+      password: 'hellas'
+    }
+  })
+  const createBlog = async (title, author, url) => {
+    await page.getByRole('button', { name: /create new blog/i }).click()
+    await page.getByPlaceholder('Title').fill(title)
+    await page.getByPlaceholder('Author').fill(author)
+    await page.getByPlaceholder('URL').fill(url)
+    await page.getByRole('button', { name: /create/i }).click()
+  }
+  await createBlog('Blog by mluukkai', 'mluukkai', 'http://example.com')
+  const createdBlog = page.locator('.blog').filter({ hasText: 'Blog by mluukkai' })
+  await createdBlog.getByRole('button', { name: /view/i }).click()
+  const deleteForCreator = createdBlog.getByRole('button', { name: /remove/i })
+  await expect(deleteForCreator).toBeVisible({ timeout: 5000 })
+  
+  await page.getByRole('button', { name: /logout/i }).click()
+
+  await page.getByLabel('username').fill('arto')
+  await page.getByLabel('password').fill('hellas')
+  await page.getByRole('button', { name: 'login' }).click()
+
+  const blog = page.locator('.blog').filter({ hasText: 'Blog by mluukkai' })
+  await blog.getByRole('button', { name: /view/i }).click()
+  const deleteButton = blog.getByRole('button', { name: /remove/i })
+  await expect(deleteButton).not.toBeVisible({ timeout: 5000 })
+})
 })
 })
