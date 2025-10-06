@@ -2,6 +2,7 @@ import { useState } from 'react'
 import blogs from '../services/blogs'
 const Blog = ({ blog, updateBlogInState, user, deleteBlogInState }) => {
   const [viewing, setViewing] = useState(false)
+  const [localLikes, setLocalLikes] = useState(blog.likes)
 
   const blogStyle = {
     paddingTop: 10,
@@ -16,7 +17,9 @@ const Blog = ({ blog, updateBlogInState, user, deleteBlogInState }) => {
   }
 
   const handleLikes = async (id) => {
-    const updatedBlog = await blogs.updateLikes(id, blog.likes + 1)
+    setLocalLikes(localLikes + 1)
+
+    const updatedBlog = await blogs.updateLikes(id, localLikes + 1)
     updatedBlog.user = blog.user
     updateBlogInState(updatedBlog)
   }
@@ -38,7 +41,7 @@ const Blog = ({ blog, updateBlogInState, user, deleteBlogInState }) => {
       {viewing && (
         <div>
           <p>{blog.url}</p>
-          <p>{blog.likes} likes {' '}
+          <p className='likes'> <span data-testid='likes-count'>{localLikes}</span> likes {' '}
             <button onClick={() => handleLikes(blog.id)}>like</button></p>
           <p>{blog.user.name}</p>
           {blog.user.username === user.username && (
