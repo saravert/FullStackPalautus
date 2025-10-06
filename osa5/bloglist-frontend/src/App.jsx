@@ -116,7 +116,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification message={notification.message} type={notification.type} />
-      <p>
+      <p data-testid="user-greeting">
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>
       <h2>Create new</h2>
