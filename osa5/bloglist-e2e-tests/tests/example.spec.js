@@ -86,5 +86,53 @@ describe('When logged in', () => {
 
   await expect(likesCount).toHaveText(`${initialLikes + 1}`, { timeout: 10000 })
 })
+
+test('A blog can be deleted', async ({ page }) => {
+  const createBlog = async (title, author, url) => {
+    await page.getByRole('button', { name: /create new blog/i }).click()
+    await page.getByPlaceholder('Title').fill(title)
+    await page.getByPlaceholder('Author').fill(author)
+    await page.getByPlaceholder('URL').fill(url)
+    await page.getByRole('button', { name: /create/i }).click()
+  }
+
+  await createBlog('Blog to delete', 'mluukkai', 'http://example.com')
+
+  const blog = page.locator('.blog').filter({ hasText: 'Blog to delete' })
+  await blog.getByRole('button', { name: /view/i }).click()
+
+  page.once('dialog', async (dialog) => {
+    expect(dialog.message()).toContain('Remove blog Blog to delete by mluukkai')
+    await dialog.accept()
+  })
+
+  const deleteButton = blog.getByRole('button', { name: /remove/i })
+  await expect(deleteButton).toBeVisible({ timeout: 5000 })
+
+  await deleteButton.click()
+  await expect(blog).not.toBeVisible({ timeout: 5000 })
+})
+ test('Deletion is cancelled', async ({ page }) => {
+  const createBlog = async (title, author, url) => {
+    await page.getByRole('button', { name: /create new blog/i }).click()
+    await page.getByPlaceholder('Title').fill(title)
+    await page.getByPlaceholder('Author').fill(author)
+    await page.getByPlaceholder('URL').fill(url)
+    await page.getByRole('button', { name: /create/i }).click()
+  } 
+  await createBlog('Blog not to delete', 'mluukkai', 'http://example.com')
+
+  const blog = page.locator('.blog').filter({ hasText: 'Blog not to delete' })
+  await blog.getByRole('button', { name: /view/i }).click()
+  page.once('dialog', async (dialog) => {
+    expect(dialog.message()).toContain('Remove blog Blog not to delete by mluukkai')
+    await dialog.dismiss()
+  })
+
+  const deleteButton = blog.getByRole('button', { name: /remove/i })
+  await expect(deleteButton).toBeVisible({ timeout: 5000 })
+  await deleteButton.click()
+  await expect(blog).toBeVisible({ timeout: 5000 }) 
+})
 })
 })
