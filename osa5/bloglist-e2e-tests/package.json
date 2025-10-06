@@ -1,0 +1,17 @@
+{
+  "name": "bloglist-e2e-tests",
+  "version": "1.0.0",
+  "description": "e2e testing for the blog",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:report": "playwright show-report",
+    "test:ui": "playwright test --ui"
+  },
+  "author": "Sara Vertanen",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.55.1",
+    "@types/node": "^24.5.2"
+  }
+}

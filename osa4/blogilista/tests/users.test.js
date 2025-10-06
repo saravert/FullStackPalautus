@@ -9,23 +9,13 @@ const User = require('../models/user')
 
 const api = supertest(app)
 
-const initialUsers = [
-  {
-    username: 'moore',
-    name: 'Moore Mike',
-    password: 'salainen',
-  },
-  {
-    username: 'doore',
-    name: 'Moore Don',
-    password: 'salainen2',
-  },
-  {
-    username: 'hoore',
-    name: 'Humphrey Odessa',
-    password: 'secret',
-  },
-]
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(u => u.toJSON())
+}
+
+module.exports = { usersInDb }
+
 
 describe('when there is initially one user at db', () => {
   beforeEach(async () => {
