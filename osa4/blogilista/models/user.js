@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const { min } = require('lodash')
 const mongoose = require('mongoose')
 
